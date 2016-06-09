@@ -1,0 +1,10 @@
+hello-world:
+  image: debian:8
+  container_name: "debian8"
+  hostname: "debian8.mageddo"
+  volumes:
+    - $PWD/build:/opt/app
+  working_dir: /opt/app
+  command: ./filewritter
+  mem_limit: 100m
+  memswap_limit: 0

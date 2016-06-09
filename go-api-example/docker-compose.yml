@@ -1,0 +1,10 @@
+go-api-example:
+  image: debian:8
+  container_name: "go-api-example"
+  hostname: "go-api-example.mageddo"
+  volumes:
+    - $PWD/build:/opt/app
+  working_dir: /opt/app
+  command: ./go-api-example
+  mem_limit: 10m
+  memswap_limit: 0
