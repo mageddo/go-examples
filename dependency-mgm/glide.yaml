@@ -3,5 +3,7 @@ import:
 
   - package: github.com/mageddo/stringUtils
     version: 1.0.0
-  - package: github.com/mageddo/go-dependency-test
+  - package: bitbucket.org/ElvisDeFreitas/go-dependency-test
     version: 1.0.1
+    repo: https://ElvisDeFreitas@bitbucket.org/ElvisDeFreitas/go-dependency-test.git
+    vcs: git
