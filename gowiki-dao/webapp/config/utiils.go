@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/mageddo/go-examples/gowiki-dao/webapp/model"
 	"regexp"
 	"net/http"
 	"fmt"
@@ -22,7 +23,7 @@ func MakeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 
 var templates = loadTemplates()
 
-func RenderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+func RenderTemplate(w http.ResponseWriter, tmpl string, p *model.Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
