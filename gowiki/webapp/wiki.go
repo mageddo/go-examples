@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"fmt"
 )
 
 type Page struct {
@@ -54,13 +55,26 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var templates = loadTemplates()
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func loadTemplates() *template.Template {
+	defer func(){
+		if str := recover(); str != nil {
+			str = fmt.Sprintf("Not found templates %s", str)
+			fmt.Println("error: ", str)
+			panic(str)
+		}
+	}()
+
+	var templates = template.Must(template.ParseFiles("view/edit.html", "view/view.html"))
+	return templates;
 }
 
 var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
@@ -83,3 +97,4 @@ func main() {
 
 	http.ListenAndServe(":8080", nil)
 }
+	
