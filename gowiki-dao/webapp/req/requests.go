@@ -1,6 +1,9 @@
 package req
 
-import "container/list"
+import (
+	"container/list"
+	"log"
+)
 
 type Path struct {
 	Paths *list.List
@@ -14,6 +17,7 @@ func init(){
 }
 
 func (p *Path) Load(str string) string {
+	log.Println("mapping to: ", str)
 	p.Paths.PushBack(str)
 	return str
 }
