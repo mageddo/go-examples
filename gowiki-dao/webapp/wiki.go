@@ -3,13 +3,10 @@ package main
 import (
 	"github.com/mageddo/go-examples/gowiki-dao/webapp/config"
 	"github.com/mageddo/go-examples/gowiki-dao/webapp/dao/wiki"
-	"github.com/mageddo/go-examples/gowiki-dao/webapp/controller"
 	"net/http"
 )
 
 func main() {
-	//controller.LoadController()
-	http.HandleFunc("/edit/", config.MakeHandler(editHandler))
 	http.HandleFunc("/save/", config.MakeHandler(saveHandler))
 	http.ListenAndServe(":8080", nil)
 }
