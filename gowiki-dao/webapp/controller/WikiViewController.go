@@ -6,7 +6,7 @@ import (
 	"github.com/mageddo/go-examples/gowiki-dao/webapp/dao/wiki"
 )
 
-func main(){
+func LoadController(){
 	http.HandleFunc("/view/", config.MakeHandler(func (w http.ResponseWriter, r *http.Request, title string){
 		p, err := wiki.LoadPage(title)
 		if err != nil {
