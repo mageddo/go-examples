@@ -1,12 +1,24 @@
 package wiki
 
-import "github.com/mageddo/go-examples/gowiki-dao/webapp/model"
+import (
+	"io/ioutil"
+)
 
-func LoadPage(title string) (*model.Page, error) {
+type Page struct {
+	Title string
+	Body []byte
+}
+
+func LoadPage(title string) (*Page, error) {
 	filename := title + ".txt"
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	return &model.Page{Title: title, Body: body}, nil
+	return &Page{Title: title, Body: body}, nil
+}
+
+func (p *Page) Save() error {
+	filename := p.Title + ".txt"
+	return ioutil.WriteFile(filename, p.Body, 0600)
 }
