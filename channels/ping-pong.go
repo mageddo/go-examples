@@ -27,11 +27,18 @@ func printer(c <-chan string) { // le o channel
     fmt.Println(msg)
     time.Sleep(time.Second * 1)
   }
+  fmt.Println("all messages read") // nunca virá aqui
 }
 
 
 func main() {
-  var c chan string = make(chan string, 10)
+  /* Esse valor 10 é o buffer, ou seja, quando um valor maior que 1 é passado
+   * o channel funciona de forma asincrona, uma rotina consegue rodar n vezes
+   * e só irá parar quando o buffer encher, quando está em 1 ela só consegue 
+   * enviar 1, e o leitor só consegue ler 1
+   *
+   */
+  var c chan string = make(chan string, 10) 
 
   go pinger(c)
   go ponger(c)
