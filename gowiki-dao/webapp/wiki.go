@@ -8,19 +8,10 @@ import (
 )
 
 func main() {
-	controller.LoadController()
+	//controller.LoadController()
 	http.HandleFunc("/edit/", config.MakeHandler(editHandler))
 	http.HandleFunc("/save/", config.MakeHandler(saveHandler))
 	http.ListenAndServe(":8080", nil)
-}
-
-
-func editHandler(w http.ResponseWriter, r *http.Request, title string) {
-	p, err := wiki.LoadPage(title)
-	if err != nil {
-		p = &wiki.Page{Title: title}
-	}
-	config.RenderTemplate(w, "edit", p)
 }
 
 func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
