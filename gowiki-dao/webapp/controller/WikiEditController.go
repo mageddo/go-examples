@@ -10,7 +10,7 @@ import (
 
 func init(){
 	log.Println("loading WikiEditController")
-	http.HandleFunc(req.Paths.Load("/edit/"), config.MakeHandler(func (w http.ResponseWriter, r *http.Request, title string){
+	http.HandleFunc(req.Load("/edit/"), config.MakeHandler(func (w http.ResponseWriter, r *http.Request, title string){
 		p, err := wiki.LoadPage(title)
 		if err != nil {
 			p = &wiki.Page{Title: title}

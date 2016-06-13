@@ -5,23 +5,14 @@ import (
 	"log"
 )
 
-type Path struct {
-	Paths *list.List
-}
+var Paths = list.New()
 
-var Paths *Path
-
-func init(){
-	Paths = new(Path)
-	Paths.Paths = list.New()
-}
-
-func (p *Path) Load(str string) string {
+func Load(str string) string {
 	log.Println("mapping to: ", str)
-	p.Paths.PushBack(str)
+	Paths.PushBack(str)
 	return str
 }
 
-//func (p *Path) GetPaths() list.List {
-//	return
-//}
+func GetPaths() *list.List {
+	return Paths
+}
