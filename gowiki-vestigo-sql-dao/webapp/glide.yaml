@@ -1,4 +1,4 @@
-package: github.com/mageddo/go-examples/gowiki-vestigo-dao/webapp
+package: github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp
 import:
 
   - package: github.com/mageddo/vestigo

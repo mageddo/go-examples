@@ -1,1 +1,6 @@
-A DAO application example with file persistence
+A DAO application example with sql persistence
+
+# Installing
+
+	$ glide install
+	$ ./build.sh
