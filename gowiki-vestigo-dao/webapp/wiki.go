@@ -9,5 +9,5 @@ import (
 func main() {
 	controller.LoadControllers()
 	log.Println("starting app")
-	http.ListenAndServe(":8080", nil)
+	log.Fatal("can not start app: ", http.ListenAndServe(":8080", controller.App))
 }

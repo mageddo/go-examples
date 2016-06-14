@@ -1,10 +1,14 @@
 package controller
 
-import "log"
+import (
+	"log"
+	"github.com/mageddo/vestigo"
+)
 
-var msg = func()int{
+
+var App = func() *vestigo.Router {
 	log.Println("loading controllers....")
-	return 0
+	return vestigo.NewRouter()
 }()
 
 func LoadControllers(){
