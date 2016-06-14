@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 	"log"
-	"github.com/mageddo/go-examples/gowiki-dao/webapp/controller"
+	"github.com/mageddo/go-examples/gowiki-vestigo-dao/webapp/controller"
 )
 
 func main() {
