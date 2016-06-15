@@ -11,19 +11,19 @@ func GetConnection() (*sql.DB, error) {
 	return db, err
 }
 
-func Run(fn func(db *sql.DB) (*interface{}, *error) ) (interface{},*error) {
+func Run(fn func(db *sql.DB) (*interface{}, error) ) (interface{},error) {
 
 	db, err := GetConnection()
 	if err != nil {
 		log.Fatal("could not open connection", err)
-		return
+		return nil, err
 	}
 	defer db.Close()
 
 	return fn(db)
 }
 
-func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, *error)) (*interface{},*error) {
+func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, error)) (*interface{}, error) {
 
 	db, err := GetConnection()
 	if err != nil {
