@@ -1,8 +1,6 @@
 package wiki
 
 import (
-	"io/ioutil"
-	"fmt"
 	"github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp/crud"
 	"database/sql"
 	"log"
@@ -14,12 +12,29 @@ type Page struct {
 }
 
 func LoadPage(title string) (*Page, error) {
-	filename := getFilename(title)
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	return &Page{Title: title, Body: body}, nil
+
+	log.Println("m=LoadPage,msg=starting")
+	o, err := crud.Run(func(db *sql.DB) (interface{}, error){
+		rows, err := db.Query("SELECT description FROM wiki WHERE name=$1", title);
+		u := Page{Title: title}
+		if err != nil {
+			log.Println("m=LoadPage,msg=returning nil because error")
+			return nil, err
+		}
+
+		if rows.Next(){
+			rows.Scan(&u.Body)
+			return u, nil
+		}else{
+			log.Println("m=LoadPage,msg=returning nil for all")
+			return u, nil
+		}
+	})
+
+	log.Println("m=LoadPage,msg=do casting")
+	var v = o.(Page)
+	log.Println("m=LoadPage,msg=casting done")
+	return &v, err
 }
 
 func (p *Page) Save() error {
@@ -29,17 +44,15 @@ func (p *Page) Save() error {
 		row := db.QueryRow(`
 			INSERT INTO wiki (name,description)
 			VALUES
-				($1, $2);
+				($1, $2) RETURNING name;
 		`, p.Title, string(p.Body))
 
-		var qtd int64
-		err := row.Scan(qtd)
-		return qtd, err
+		var name string
+		err := row.Scan(&name)
+		return name, err
 	})
-	log.Println(qtd, "inserted wiki(s)")
+	if err == nil{
+		log.Println(qtd, " wiki inserted")
+	}
 	return err
-}
-
-func getFilename(name string) string {
-	return fmt.Sprintf("base/%s.txt", name)
 }

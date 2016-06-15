@@ -21,12 +21,15 @@ func Run(fn func(db *sql.DB) (interface{}, error) ) (interface{},error) {
 
 	db, err := GetConnection()
 	if err != nil {
-		log.Fatal("could not open connection", err)
+		log.Println("could not open connection", err)
 		return nil, err
 	}
 	defer db.Close()
 
-	return fn(db)
+	log.Println("m=Run, msg=calling cb")
+	i, err := fn(db)
+	log.Println("m=Run, msg=cb called")
+	return i,err
 }
 
 /**
@@ -37,7 +40,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 	defer func(){
 		str := recover()
 		if str != nil{
-			log.Fatal("panic occur: ", str)
+			log.Println("panic occur: ", str)
 		}
 	}()
 
@@ -45,7 +48,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 
 	db, err := GetConnection()
 	if err != nil {
-		log.Fatal("could not open connection", err)
+		log.Println("could not open connection", err)
 		return nil, err
 	}
 	defer func(){
@@ -56,7 +59,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 	log.Println("begin transaction")
 	tx,err := db.Begin()
 	if err != nil {
-		log.Fatal("could not open transaction", err)
+		log.Println("could not open transaction", err)
 		return nil, err
 	}
 
@@ -64,7 +67,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 	it, stm, err := fn(tx)
 	if err != nil {
 		tx.Rollback()
-		log.Fatal("could not run stm", err)
+		log.Println("could not run stm", err)
 		return nil, err
 	}
 	defer func(){
@@ -75,7 +78,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 	err = tx.Commit()
 	log.Println("transaction commited")
 	if err != nil {
-		log.Fatal("could not commit transaction", err)
+		log.Println("could not commit transaction", err)
 		return nil, err
 	}
 

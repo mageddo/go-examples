@@ -12,7 +12,9 @@ func init(){
 	log.Println("loading WikiEditController")
 	App.Get("/edit/:title", func (w http.ResponseWriter, r *http.Request){
 		var title string = vestigo.Param(r, "title")
+		log.Println("M=wiki-edit, msg=starting")
 		p, err := wiki.LoadPage(title)
+		log.Println("M=wiki-edit, msg=loaded")
 		if err != nil {
 			p = &wiki.Page{Title: title}
 		}
