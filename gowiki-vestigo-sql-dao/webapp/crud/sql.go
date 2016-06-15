@@ -7,7 +7,7 @@ import (
 )
 
 func GetConnection() (*sql.DB, *err) {
-	db, err := sql.Open("postgres", "postgres://pqgotest:password@localhost/pqgotest?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/pqgotest?sslmode=disable")
 	return db, err
 }
 
