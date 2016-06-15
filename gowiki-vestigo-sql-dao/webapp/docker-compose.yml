@@ -3,7 +3,7 @@ postgresql:
   environment:
     - POSTGRES_PASSWORD=root
     - POSTGRES_USER=root
-  volume:
+  volumes:
     - /opt/databases/postgresql/data:/var/lib/postgresql/data
   container_name: postgresql-server
   hostname: postgresql-server.dev
