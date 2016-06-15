@@ -7,4 +7,6 @@ func TestGetConnection(t *testing.T) {
 	if(err != nil){
 		t.Error("the connection has failed", err)
 	}
+
+	con.Close()
 }
