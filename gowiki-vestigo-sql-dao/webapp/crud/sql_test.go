@@ -32,7 +32,20 @@ func TestTransaction(t *testing.T) {
 	})
 
 	if err != nil {
-		log.Fatal("erro ao efetuar a transação", err)
+		t.Error("erro ao efetuar a transação", err)
 	}
 
+}
+
+func TestRun(t *testing.T) {
+	_, err := Run(func(db *sql.DB) (*interface{}, error) {
+
+		_, err := db.Exec("SELECT 1;")
+		return nil, err
+
+	})
+
+	if err != nil {
+		t.Error("could not execute querie", err)
+	}
 }
