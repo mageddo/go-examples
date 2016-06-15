@@ -16,7 +16,7 @@ func TestGetConnection(t *testing.T) {
 }
 
 func TestTransaction(t *testing.T) {
-	_, err := Transaction(func(tx *sql.Tx) (*interface {}, *sql.Stmt, error) {
+	_, err := Transaction(func(tx *sql.Tx) (interface {}, *sql.Stmt, error) {
 
 		log.Println("preparing querie")
 		stm, err := tx.Prepare("SELECT 1;")
@@ -38,12 +38,10 @@ func TestTransaction(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	ra, err := Run(func(db *sql.DB) (*interface{}, error) {
+	ra, err := Run(func(db *sql.DB) (interface{}, error) {
 
-		_, err := db.Exec("SELECT 1;")
-
-		//n,_ := r.RowsAffected()
-		n := &1
+		r, err := db.Exec("SELECT 10;")
+		n,_ := r.RowsAffected()
 		return n, err
 
 	})

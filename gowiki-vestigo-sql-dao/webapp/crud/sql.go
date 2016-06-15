@@ -14,7 +14,7 @@ func GetConnection() (*sql.DB, error) {
 	return db, err
 }
 
-func Run(fn func(db *sql.DB) (*interface{}, error) ) (*interface{},error) {
+func Run(fn func(db *sql.DB) (interface{}, error) ) (interface{},error) {
 
 	db, err := GetConnection()
 	if err != nil {
@@ -26,7 +26,7 @@ func Run(fn func(db *sql.DB) (*interface{}, error) ) (*interface{},error) {
 	return fn(db)
 }
 
-func Transaction(fn func (tx *sql.Tx) (*interface{}, *sql.Stmt, error)) (*interface{}, error) {
+func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interface{}, error) {
 
 	defer func(){
 		str := recover()
