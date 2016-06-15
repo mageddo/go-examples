@@ -6,12 +6,12 @@ import (
 	"log"
 )
 
-func GetConnection() (*sql.DB, *err) {
+func GetConnection() (*sql.DB, *error) {
 	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/pqgotest?sslmode=disable")
 	return db, err
 }
 
-func Run(fn func(db *sql.DB) (*interface{}, *err) ) (interface{},*err) {
+func Run(fn func(db *sql.DB) (*interface{}, *error) ) (interface{},*error) {
 
 	db, err := GetConnection()
 	if err != nil {
@@ -20,11 +20,10 @@ func Run(fn func(db *sql.DB) (*interface{}, *err) ) (interface{},*err) {
 	}
 	defer db.Close()
 
-	fn(db)
-
+	return fn(db)
 }
 
-func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, *err)) (*interface{},*err) {
+func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, *error)) (*interface{},*error) {
 
 	db, err := GetConnection()
 	if err != nil {
@@ -47,7 +46,7 @@ func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, *err)) (*interfa
 	}
 	defer stm.Close()
 
-	err := tx.Commit()
+	err = tx.Commit()
 	if err != nil {
 		log.Fatal("could not commit transaction", err)
 		return nil, err
