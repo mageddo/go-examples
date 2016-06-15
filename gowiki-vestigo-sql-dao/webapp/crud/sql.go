@@ -14,6 +14,9 @@ func GetConnection() (*sql.DB, error) {
 	return db, err
 }
 
+/**
+  the the specified querie then close the connection
+ */
 func Run(fn func(db *sql.DB) (interface{}, error) ) (interface{},error) {
 
 	db, err := GetConnection()
@@ -26,6 +29,9 @@ func Run(fn func(db *sql.DB) (interface{}, error) ) (interface{},error) {
 	return fn(db)
 }
 
+/**
+  create a transaction, try run the querie, then commit or rollback the transaction and close the connection
+ */
 func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interface{}, error) {
 
 	defer func(){
