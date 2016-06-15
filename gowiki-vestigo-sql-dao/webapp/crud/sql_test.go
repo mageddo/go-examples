@@ -38,14 +38,19 @@ func TestTransaction(t *testing.T) {
 }
 
 func TestRun(t *testing.T) {
-	_, err := Run(func(db *sql.DB) (*interface{}, error) {
+	ra, err := Run(func(db *sql.DB) (*interface{}, error) {
 
 		_, err := db.Exec("SELECT 1;")
-		return nil, err
+
+		//n,_ := r.RowsAffected()
+		n := &1
+		return n, err
 
 	})
 
 	if err != nil {
 		t.Error("could not execute querie", err)
 	}
+
+	log.Println(">>>>", ra)
 }
