@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/mageddo/go-examples/gowiki-dao/webapp/dao/wiki"
+	"github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp/dao/wiki"
 	"net/http"
 	"fmt"
 	"html/template"
