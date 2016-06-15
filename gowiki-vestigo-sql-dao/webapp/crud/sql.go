@@ -23,7 +23,7 @@ func Run(fn func(db *sql.DB) (*interface{}, error) ) (interface{},error) {
 	return fn(db)
 }
 
-func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, error)) (*interface{}, error) {
+func Transaction(fn func (tx *sql.Tx) (*interface{}, *sql.Stmt, error)) (*interface{}, error) {
 
 	db, err := GetConnection()
 	if err != nil {
@@ -38,7 +38,7 @@ func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, error)) (*interf
 		return nil, err
 	}
 
-	stm, err := fn(tx)
+	it, stm, err := fn(tx)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal("could not run stm", err)
@@ -52,5 +52,5 @@ func Transaction(fn func (db *sql.DB) (*interface{}, *sql.Stmt, error)) (*interf
 		return nil, err
 	}
 
-
+	return it, err
 }
