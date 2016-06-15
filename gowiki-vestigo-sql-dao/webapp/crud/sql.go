@@ -6,8 +6,11 @@ import (
 	"log"
 )
 
+/**
+  abre a conexão com o banco de dados
+ */
 func GetConnection() (*sql.DB, error) {
-	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/pqgotest?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
 	return db, err
 }
 
