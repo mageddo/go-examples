@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func GetConnection() (*sql.DB, *error) {
+func GetConnection() (*sql.DB, error) {
 	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/pqgotest?sslmode=disable")
 	return db, err
 }
