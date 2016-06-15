@@ -4,6 +4,7 @@ import (
 	"testing"
 	"database/sql"
 	"log"
+	"reflect"
 )
 
 
@@ -50,5 +51,9 @@ func TestRun(t *testing.T) {
 		t.Error("could not execute querie", err)
 	}
 
-	log.Println(">>>>", ra)
+	log.Println("ra type: ", reflect.TypeOf(ra))
+
+	if ra != int64(1) {
+		t.Error("affect rows number is not correct", ra)
+	}
 }
