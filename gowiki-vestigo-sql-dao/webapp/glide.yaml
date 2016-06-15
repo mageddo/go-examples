@@ -1,5 +1,0 @@
-package: github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp
-import:
-
-  - package: github.com/mageddo/vestigo
-    version: v1.0.2
