@@ -18,8 +18,15 @@ func TestGetConnection(t *testing.T) {
 func TestTransaction(t *testing.T) {
 	_, err := Transaction(func(tx *sql.Tx) (*interface {}, *sql.Stmt, error) {
 
-		stm, err := tx.Prepare("SELECT ?;")
-		stm.Exec(1)
+		log.Println("preparing querie")
+		stm, err := tx.Prepare("SELECT 1;")
+		if err != nil{
+			log.Println("error prepare SQL")
+			return nil, nil, err
+		}
+		log.Println("executing querie")
+		_, err = stm.Exec()
+		log.Println("returning status querie")
 
 		return nil, stm, err
 	})
