@@ -3,11 +3,14 @@ package wiki
 import (
 	"io/ioutil"
 	"fmt"
+	"github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp/crud"
+	"database/sql"
+	"log"
 )
 
 type Page struct {
 	Title string
-	Body []byte
+	Body  []byte
 }
 
 func LoadPage(title string) (*Page, error) {
@@ -20,8 +23,21 @@ func LoadPage(title string) (*Page, error) {
 }
 
 func (p *Page) Save() error {
-	filename := getFilename(p.Title)
-	return ioutil.WriteFile(filename, p.Body, 0600)
+	log.Print("m=Save,msg=starting wiki insert")
+	qtd, err := crud.Run(func(db *sql.DB) (interface{}, error) {
+
+		row := db.QueryRow(`
+			INSERT INTO wiki (name,description)
+			VALUES
+				($1, $2);
+		`, p.Title, string(p.Body))
+
+		var qtd int64
+		err := row.Scan(qtd)
+		return qtd, err
+	})
+	log.Println(qtd, "inserted wiki(s)")
+	return err
 }
 
 func getFilename(name string) string {
