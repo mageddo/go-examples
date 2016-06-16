@@ -15,7 +15,7 @@ func init(){
 		log.Println("M=wiki-edit, msg=starting")
 		p, err := wiki.LoadPage(title)
 		log.Println("M=wiki-edit, msg=loaded")
-		if err != nil {
+		if err != nil || p.Title == "" {
 			p = &wiki.Page{Title: title}
 		}
 		config.RenderTemplate(w, "edit", p)

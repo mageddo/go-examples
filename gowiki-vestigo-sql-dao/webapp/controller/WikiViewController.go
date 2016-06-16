@@ -15,9 +15,9 @@ func init(){
 		log.Println("M=wiki-view, msg=loading")
 		p, err := wiki.LoadPage(title)
 		log.Println("M=wiki-view, msg=loaded")
-		if err != nil {
-		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
-		return
+		if err != nil || p.Title == "" {
+			http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+			return
 		}
 		config.RenderTemplate(w, "view", p)
 	})

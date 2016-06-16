@@ -16,7 +16,7 @@ func LoadPage(title string) (*Page, error) {
 	log.Println("m=LoadPage,msg=starting")
 	o, err := crud.Run(func(db *sql.DB) (interface{}, error){
 		rows, err := db.Query("SELECT description FROM wiki WHERE name=$1", title);
-		u := Page{Title: title}
+		u := Page{}
 		if err != nil {
 			log.Println("m=LoadPage,msg=returning nil because error")
 			return nil, err
@@ -24,9 +24,10 @@ func LoadPage(title string) (*Page, error) {
 
 		if rows.Next(){
 			rows.Scan(&u.Body)
+			u.Title = title
 			return u, nil
 		}else{
-			log.Println("m=LoadPage,msg=returning nil for all")
+			log.Println("m=LoadPage,msg=returning nil")
 			return u, nil
 		}
 	})
