@@ -6,15 +6,19 @@ import (
 	"log"
 )
 
-/**
-  abre a conexão com o banco de dados
- */
-func GetConnection() (*sqlx.DB) {
+var pool *sqlx.DB
+func init(){
 	db, err := sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
 	db.SetMaxIdleConns(2)
 	db.SetMaxOpenConns(95)
 	if err != nil{
-		log.Println("m=GetConnection,msg=connection has failed", err)
+		log.Println("m=GetPool,msg=connection has failed", err)
 	}
-	return db
+}
+
+/**
+  abre a conexão com o banco de dados
+ */
+func GetPool() (*sqlx.DB) {
+	return pool
 }

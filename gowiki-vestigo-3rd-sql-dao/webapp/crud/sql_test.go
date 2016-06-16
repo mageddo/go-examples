@@ -8,8 +8,8 @@ import (
 )
 
 
-func TestGetConnection(t *testing.T) {
-	con, err := GetConnection()
+func TestGetPool(t *testing.T) {
+	con, err := GetPool()
 	if(err != nil){
 		t.Error("the connection has failed", err)
 	}

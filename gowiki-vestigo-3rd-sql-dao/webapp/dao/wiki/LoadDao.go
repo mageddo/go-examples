@@ -18,7 +18,7 @@ func LoadPage(title string) (*Page, error) {
 			err error
 	)
 	log.Println("m=LoadPage,msg=starting")
-	db := crud.GetConnection()
+	db := crud.GetPool()
 	err = db.Get(u, `SELECT description FROM wiki WHERE name=$1`, title)
 	if err != nil {
 		log.Println("m=LoadPage,msg=error at select query: ", err)
@@ -41,7 +41,7 @@ func (p *Page) Save() error {
 	}()
 
 	log.Print("m=Save,msg=starting wiki insert")
-	db := crud.GetConnection()
+	db := crud.GetPool()
 	db.MustExec(`
 			INSERT INTO wiki (name,description)
 			VALUES
