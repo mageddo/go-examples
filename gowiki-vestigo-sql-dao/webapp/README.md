@@ -7,6 +7,9 @@ A DAO application example with sql persistence
 
 # Benchmark
 
+
+	$ siege -c400 -t10s http://localhost:8989/edit/elvisxx
+
 	Lifting the server siege...      done.
 
 	Transactions:		        3269 hits
