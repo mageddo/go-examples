@@ -1,4 +1,4 @@
 #!/bin/bash
 
-go build -o build/wiki  
+go build -v -o build/wiki  
 

@@ -21,6 +21,10 @@ func LoadPage(title string) (*Page, error) {
 			log.Println("m=LoadPage,msg=error at select query", err)
 			return u, err
 		}
+		defer func(){
+			log.Println("m=LoadPage,msg=closing rows")
+			rows.Close()
+		}()
 		rows.Next()
 		rows.Scan(&u.Body)
 		u.Title = title

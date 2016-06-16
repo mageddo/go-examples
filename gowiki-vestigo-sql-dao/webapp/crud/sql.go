@@ -11,6 +11,8 @@ import (
  */
 func GetConnection() (*sql.DB, error) {
 	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
+	//db.SetMaxIdleConns(8)
+	db.SetMaxOpenConns(95)
 	return db, err
 }
 
@@ -24,7 +26,10 @@ func Run(fn func(db *sql.DB) (interface{}, error) ) (interface{},error) {
 		log.Println("could not open connection", err)
 		return nil, err
 	}
-	defer db.Close()
+	defer func(){
+		log.Println("m=Run,msg=closing connection")
+		db.Close()
+	}()
 
 	log.Println("m=Run, msg=calling cb")
 	i, err := fn(db)
@@ -52,7 +57,7 @@ func Transaction(fn func (tx *sql.Tx) (interface{}, *sql.Stmt, error)) (interfac
 		return nil, err
 	}
 	defer func(){
-		log.Println("db closed")
+		log.Println("m=Transaction,msg=closing connection")
 		db.Close()
 	}()
 
