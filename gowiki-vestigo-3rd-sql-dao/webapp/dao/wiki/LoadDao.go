@@ -7,29 +7,21 @@ import (
 )
 
 type Page struct {
-	Title string
-	Body  []byte
+	Title string `db:"name"`
+	Body  []byte `db:"description"`
 }
 
 func LoadPage(title string) (*Page, error) {
 
 	var (
-			u *Page
+			u *Page = &Page{}
 			err error
 	)
-	defer func(){
-		msg := recover()
-		if msg != nil{
-			log.Println("error at select wiki", msg)
-			err = errors.New("select wiki fails")
-		}
-	}()
-
 	log.Println("m=LoadPage,msg=starting")
 	db := crud.GetConnection()
-	err = db.Get(&u, "SELECT description FROM wiki WHERE name=$1", title)
+	err = db.Get(u, `SELECT description FROM wiki WHERE name=$1`, title)
 	if err != nil {
-		log.Println("m=LoadPage,msg=error at select query", err)
+		log.Println("m=LoadPage,msg=error at select query: ", err)
 		return u, err
 	}
 	u.Title = title
@@ -56,5 +48,10 @@ func (p *Page) Save() error {
 				($1, $2) RETURNING name;
 		`, p.Title, string(p.Body))
 
+	if err == nil {
+		log.Print("m=Save,msg=inserted")
+	}else{
+		log.Print("m=Save,msg=not inserted")
+	}
 	return err
 }
