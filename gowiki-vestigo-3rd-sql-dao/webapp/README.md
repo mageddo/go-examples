@@ -2,10 +2,12 @@ A DAO application example with sql persistence
 
 # Installing
 
-	$ glide install
+	$ go get
 	$ ./build.sh
 	
 # Benchmark
+
+runnet at a I7, 16GB machine(I will update to the common machine)
 
     $ siege -c400 -t10s http://localhost:8989/edit/elvis-23
     Transactions:		        7590 hits
