@@ -4,6 +4,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/jmoiron/sqlx"
 	"log"
+	"time"
 )
 
 var (
@@ -12,7 +13,8 @@ var (
 	)
 func init(){
 	pool, err = sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
-	pool.SetMaxIdleConns(2)
+	pool.SetMaxIdleConns(5)
+	pool.SetConnMaxLifetime(2 * time.Minute)
 	pool.SetMaxOpenConns(95)
 	if err != nil{
 		log.Println("m=GetPool,msg=connection has failed", err)
