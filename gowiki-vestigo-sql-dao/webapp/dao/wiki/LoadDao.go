@@ -21,15 +21,10 @@ func LoadPage(title string) (*Page, error) {
 			log.Println("m=LoadPage,msg=returning nil because error")
 			return nil, err
 		}
-
-		if rows.Next(){
+			rows.Next()
 			rows.Scan(&u.Body)
 			u.Title = title
 			return u, nil
-		}else{
-			log.Println("m=LoadPage,msg=returning nil")
-			return u, nil
-		}
 	})
 
 	log.Println("m=LoadPage,msg=do casting")
