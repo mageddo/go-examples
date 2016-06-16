@@ -6,11 +6,14 @@ import (
 	"log"
 )
 
-var pool *sqlx.DB
+var (
+	pool *sqlx.DB
+	err error
+	)
 func init(){
-	db, err := sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
-	db.SetMaxIdleConns(2)
-	db.SetMaxOpenConns(95)
+	pool, err = sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
+	pool.SetMaxIdleConns(2)
+	pool.SetMaxOpenConns(95)
 	if err != nil{
 		log.Println("m=GetPool,msg=connection has failed", err)
 	}
