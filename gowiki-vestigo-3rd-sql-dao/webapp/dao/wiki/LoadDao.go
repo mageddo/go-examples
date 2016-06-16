@@ -3,6 +3,7 @@ package wiki
 import (
 	"github.com/mageddo/go-examples/gowiki-vestigo-3rd-sql-dao/webapp/crud"
 	"log"
+	"errors"
 )
 
 type Page struct {
@@ -16,7 +17,7 @@ func LoadPage(title string) (*Page, error) {
 		msg := recover()
 		if msg != nil{
 			log.Println("error at select wiki", msg)
-			return error("select wiki fails")
+			return errors.New("select wiki fails")
 		}
 
 	}()
@@ -39,7 +40,7 @@ func (p *Page) Save() error {
 		msg := recover()
 		if msg != nil{
 			log.Println("error at insert wiki", msg)
-			return error("insert wiki fails")
+			return errors.New("insert wiki fails")
 		}
 
 	}()

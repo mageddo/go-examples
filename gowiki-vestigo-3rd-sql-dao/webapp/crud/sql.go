@@ -3,6 +3,7 @@ package crud
 import (
 	_ "github.com/lib/pq"
 	"github.com/jmoiron/sqlx"
+	"log"
 )
 
 /**
