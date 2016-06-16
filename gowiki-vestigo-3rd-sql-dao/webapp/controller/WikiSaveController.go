@@ -2,7 +2,7 @@ package controller
 
 import (
 	"net/http"
-	"github.com/mageddo/go-examples/gowiki-vestigo-sql-dao/webapp/dao/wiki"
+	"github.com/mageddo/go-examples/gowiki-vestigo-3rd-sql-dao/webapp/dao/wiki"
 	"github.com/mageddo/vestigo"
 	"log"
 )
