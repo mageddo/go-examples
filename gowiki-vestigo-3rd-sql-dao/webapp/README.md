@@ -2,8 +2,15 @@ A DAO application example with sql persistence
 
 # Installing
 
+up the postgresql database
+
+    $ docker-compose up
+
+build and run the application
+
 	$ go get
 	$ ./build.sh
+	$ ./build/wiki
 	
 # Benchmark
 
