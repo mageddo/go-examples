@@ -11,7 +11,7 @@ import (
  */
 func GetConnection() (*sqlx.DB) {
 	db, err := sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
-	//db.SetMaxIdleConns(8)
+	db.SetMaxIdleConns(2)
 	db.SetMaxOpenConns(95)
 	if err != nil{
 		log.Println("m=GetConnection,msg=connection has failed", err)
