@@ -2,7 +2,6 @@ package wiki
 
 import (
 	"github.com/mageddo/go-examples/gowiki-vestigo-3rd-sql-dao/webapp/crud"
-	"database/sql"
 	"log"
 )
 
@@ -12,6 +11,15 @@ type Page struct {
 }
 
 func LoadPage(title string) (*Page, error) {
+
+	defer func(){
+		msg := recover()
+		if msg != nil{
+			log.Println("error at select wiki", msg)
+			return error("select wiki fails")
+		}
+
+	}()
 
 	log.Println("m=LoadPage,msg=starting")
 	db := crud.GetConnection()
@@ -26,21 +34,23 @@ func LoadPage(title string) (*Page, error) {
 }
 
 func (p *Page) Save() error {
-	log.Print("m=Save,msg=starting wiki insert")
-	qtd, err := crud.Run(func(db *sql.DB) (interface{}, error) {
 
-		row := db.QueryRow(`
+	defer func(){
+		msg := recover()
+		if msg != nil{
+			log.Println("error at insert wiki", msg)
+			return error("insert wiki fails")
+		}
+
+	}()
+
+	log.Print("m=Save,msg=starting wiki insert")
+	db := crud.GetConnection()
+	db.MustExec(`
 			INSERT INTO wiki (name,description)
 			VALUES
 				($1, $2) RETURNING name;
 		`, p.Title, string(p.Body))
 
-		var name string
-		err := row.Scan(&name)
-		return name, err
-	})
-	if err == nil{
-		log.Println(qtd, " wiki inserted")
-	}
-	return err
+	return nil
 }
