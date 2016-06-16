@@ -11,8 +11,8 @@ import (
  */
 func GetConnection() (*sql.DB, error) {
 	db, err := sql.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
-	//db.SetMaxIdleConns(8)
-	db.SetMaxOpenConns(95)
+	db.SetMaxIdleConns(2)
+	db.SetMaxOpenConns(90)
 	return db, err
 }
 
