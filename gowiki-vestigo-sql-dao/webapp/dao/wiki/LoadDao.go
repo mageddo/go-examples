@@ -18,13 +18,13 @@ func LoadPage(title string) (*Page, error) {
 		rows, err := db.Query("SELECT description FROM wiki WHERE name=$1", title);
 		var u Page
 		if err != nil {
-			log.Println("m=LoadPage,msg=returning nil because error")
-			return nil, err
+			log.Println("m=LoadPage,msg=error at select query", err)
+			return u, err
 		}
-			rows.Next()
-			rows.Scan(&u.Body)
-			u.Title = title
-			return u, nil
+		rows.Next()
+		rows.Scan(&u.Body)
+		u.Title = title
+		return u, nil
 	})
 
 	log.Println("m=LoadPage,msg=do casting")
