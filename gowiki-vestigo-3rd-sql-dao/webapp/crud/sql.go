@@ -13,7 +13,7 @@ var (
 	)
 func init(){
 	pool, err = sqlx.Open("postgres", "postgres://root:root@postgresql-server.dev/wiki?sslmode=disable")
-	pool.SetMaxIdleConns(1)
+	pool.SetMaxIdleConns(0)
 	pool.SetConnMaxLifetime(2 * time.Minute)
 	pool.SetMaxOpenConns(95)
 	if err != nil{
