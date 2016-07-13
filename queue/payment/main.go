@@ -24,7 +24,7 @@ func main() {
 	c := make(chan *Payment, 1)
 	go PaymentQueuePoolSender(c, payments)
 
-	for i:=1; i <= 1000; i++ {
+	for i:=1; i <= 10; i++ {
 		go PaymentQueueConsumer(c, i)
 	}
 
@@ -35,9 +35,12 @@ func main() {
 
 }
 
+/**
+ * Keep inserting itens on database(array) to be consumed by queues
+ */
 func dataBasePopulator(payments *[]Payment){
 	for i := 1; ; i++ {
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Millisecond * 100)
 		*payments = append((*payments), Payment{
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("debitor: %d", i),
@@ -72,7 +75,7 @@ func PaymentQueueConsumer(c <-chan *Payment, i int){
 		var payment *Payment = <- c
 		payment.status = 1;
 		log.Printf("queue=pay-%d, paying %.2f from %s to %s\n", i, payment.value, payment.debtor, payment.creditor)
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 10)
 		log.Printf("queue=pay-%d, payed!", i)
 		payment.status = 2;
 	}
