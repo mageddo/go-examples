@@ -21,7 +21,7 @@ func main() {
 		{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55},
 	}
 
-	c := make(chan Payment, 1)
+	c := make(chan *Payment, 10)
 	go PaymentQueuePoolSender(c, payments)
 	go PaymentQueueConsumer(c)
 
@@ -47,10 +47,15 @@ func dataBasePopulator(payments *[]Payment){
 /*
  * Send payments to consumers one-by-one
  */
-func PaymentQueuePoolSender(c chan<- Payment, payments *[]Payment) {
-	for i := 0; i < len(*payments); i++ {
-		c <- (*payments)[i]
-		time.Sleep(time.Second * 15)
+func PaymentQueuePoolSender(c chan<- *Payment, payments *[]Payment) {
+	for {
+		for i := 0; i < len(*payments); i++ {
+			p := &(*payments)[i]
+			if(p.status == 0){
+				c <- p
+			}
+			time.Sleep(time.Millisecond * 500)
+		}
 	}
 	log.Println("pinger: all payments sended!")
 }
@@ -58,9 +63,11 @@ func PaymentQueuePoolSender(c chan<- Payment, payments *[]Payment) {
 /*
  * Consumes the queue pool
  */
-func PaymentQueueConsumer(c <-chan Payment){
+func PaymentQueueConsumer(c <-chan *Payment){
 	for {
-		var payment Payment = <- c
+		var payment *Payment = <- c
+		payment.status = 1;
 		log.Printf("paying %.2f from %s to %s\n", payment.value, payment.debtor, payment.creditor)
+		payment.status = 2;
 	}
 }
