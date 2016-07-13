@@ -56,8 +56,9 @@ func PaymentQueuePoolSender(c chan<- *Payment, payments *[]Payment) {
 			p := &(*payments)[i]
 			if(p.status == 0){
 				c <- p
+				log.Println("sending to pay")
+				time.Sleep(time.Millisecond * 500)
 			}
-			time.Sleep(time.Millisecond * 500)
 		}
 	}
 	log.Println("pinger: all payments sended!")
