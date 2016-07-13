@@ -22,20 +22,32 @@ func main() {
 	}
 
 	c := make(chan Payment, 1)
-	go PaymentQueueSender(c, payments)
+	go PaymentQueuePoolSender(c, payments)
 	go PaymentQueueConsumer(c)
 
-	log.Println(payments)
+	dataBasePopulator(payments)
 
 	var str string;
 	fmt.Scanln(&str)
 
 }
 
+func dataBasePopulator(payments *[]Payment){
+	for i := 1; ; i++ {
+		time.Sleep(time.Second * 20)
+		*payments = append((*payments), Payment{
+			debtor: fmt.Sprintf("debitor: %d", i),
+			creditor: fmt.Sprintf("debitor: %d", i),
+			value: 1.99,
+		})
+
+	}
+}
+
 /*
  * Send payments to consumers one-by-one
  */
-func PaymentQueueSender(c chan<- Payment, payments *[]Payment) {
+func PaymentQueuePoolSender(c chan<- Payment, payments *[]Payment) {
 	for i := 0; i < len(*payments); i++ {
 		c <- (*payments)[i]
 		time.Sleep(time.Second * 15)
