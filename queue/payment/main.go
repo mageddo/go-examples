@@ -13,11 +13,11 @@ type Payment struct {
 	status int8 // 0=not processed, 1=processing, 2=processed
 }
 
-var keep int = 1;
+var keep int = 1; // 1=keep populate the database, !1=do not populate the database
 
 func main() {
 
-	payments := &[]Payment{
+	payments := &[]Payment{ // initial database status
 		{creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99},
 		{creditor: "Ana Carolina", debtor: "Elvis", value: 60.00},
 		{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55},
@@ -97,6 +97,7 @@ func PaymentQueueConsumer(c <-chan *Payment, i int){
 		var payment *Payment = <- c
 		payment.status = 1;
 		log.Printf("queue=pay-%d, paying %.2f from %s to %s\n", i, payment.value, payment.debtor, payment.creditor)
+		// taking a time to execute the very long payment process
 		time.Sleep(time.Second * 10)
 		log.Printf("queue=pay-%d, payed!", i)
 		payment.status = 2;
