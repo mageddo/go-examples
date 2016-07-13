@@ -36,15 +36,17 @@ func main() {
  * Send payments to consumers one-by-one
  */
 func PaymentQueueSender(c chan<- Payment, payments *[]Payment) {
-	for i := 0; i <= len(*payments); i++ {
+	for i := 0; i < len(*payments); i++ {
 		c <- (*payments)[i]
 		time.Sleep(time.Second * 15)
 	}
 	log.Println("pinger: all payments sended!")
 }
 
+/*
+ * Consumes the queue pool
+ */
 func PaymentQueueConsumer(c <-chan Payment){
-
 	for {
 		var payment Payment = <- c
 		log.Printf("paying %.2f from %s to %s\n", payment.value, payment.debtor, payment.creditor)
