@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "time"
+  "log"
 )
 
 func pinger(c chan<- string) {  // escreve no channel
@@ -40,9 +41,15 @@ func main() {
    */
   var c chan string = make(chan string, 10) 
 
+  log.Println("calling pinger")
   go pinger(c)
+  log.Println("pinger called")
+  log.Println("calling ponger")
   go ponger(c)
+  log.Println("ponger called")
+  log.Println("calling printer")
   go printer(c)
+  log.Println("printer called")
 
   var input string
   fmt.Scanln(&input)
