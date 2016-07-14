@@ -8,6 +8,8 @@ import (
 	"math/rand"
 )
 
+// based on http://stackoverflow.com/a/10735763/2979435
+
 type Counter struct {
 	mu  sync.Mutex
 	x   int64
