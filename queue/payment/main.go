@@ -156,7 +156,7 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 	for {
 		p := db.getNotProcessedAndSetProcessing()
 		if p != nil {
-			log.Printf(">> sending payment=%d: ", p.id)
+			log.Printf(">> sending payment=%d ", p.id)
 			c <- p
 		}else{
 			log.Println("nothing to process, hibernating...")
