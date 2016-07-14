@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"container/list"
 	"math/rand"
+	"sync"
 )
 
 type Payment struct {
@@ -19,7 +20,49 @@ type Payment struct {
 var keep int = 1; // 1=keep populate the database, !1=do not populate the database
 
 type DB struct {
+	mu sync.Mutex
 	payments list.List
+}
+func (db *DB) add(p *Payment){
+	db.mu.Lock()
+	db.payments.PushBack(p)
+	db.mu.Unlock()
+}
+
+func (db *DB) getNotProcessed() (*Payment){
+	db.mu.Lock()
+	for e := db.payments.Front(); e != nil; e = e.Next() {
+		p := e.Value.(*Payment)
+		if(p.status == 0){
+			db.mu.Unlock()
+			return p
+		}
+	}
+	db.mu.Unlock()
+	return nil
+}
+
+func (db *DB) getPayment(id int) (*Payment){
+	db.mu.Lock()
+	for e := db.payments.Front(); e != nil; e = e.Next() {
+		p := e.Value.(*Payment)
+		if(p.id == id){
+			db.mu.Unlock()
+			return p
+		}
+	}
+	db.mu.Unlock()
+	return nil
+}
+
+func (db *DB) updateItem(p *Payment){
+	dbP := db.getPayment(p.id)
+	db.mu.Lock()
+	dbP.status = p.status
+	dbP.creditor = p.creditor
+	dbP.debtor = p.debtor
+	dbP.value = p.value
+	db.mu.Unlock()
 }
 
 var db DB
@@ -79,7 +122,7 @@ func dataBasePopulator(){
 		if keep != 1 {
 			continue
 		}
-		db.payments.PushBack(&Payment{
+		db.add(&Payment{
 			id: i,
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
@@ -93,20 +136,15 @@ func dataBasePopulator(){
  * Send payments to consumers one-by-one
  */
 func PaymentQueuePoolSender(c chan<- *Payment) {
-	var found bool
 	for {
-		found = false
-		for e := db.payments.Front(); e != nil; e = e.Next() {
-			p := e.Value.(*Payment)
-			if(p.status == 0){
-				log.Printf("sending payment=%d: ", p.id)
-				c <- p
-				p.status = 1
-				log.Printf("sent payment=%d: ", p.id)
-				found = true
-			}
-		}
-		if !found {
+		p := db.getNotProcessed()
+		if p != nil {
+			log.Printf("sending payment=%d: ", p.id)
+			c <- p
+			p.status = 1
+			db.updateItem(p)
+
+		}else{
 			log.Println("nothing to process, hibernating...")
 			time.Sleep(time.Second * 30)
 		}
@@ -125,6 +163,7 @@ func PaymentQueueConsumer(c <-chan *Payment, i int){
 		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
 		log.Printf("payed payment=%d, queue=pay-%d", i, payment.id)
 		payment.status = 2;
+		db.updateItem(payment)
 	}
 }
 
