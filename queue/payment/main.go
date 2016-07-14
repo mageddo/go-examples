@@ -57,7 +57,11 @@ func main() {
 			log.Println("populate disabled!")
 			break
 		case "2":
-			log.Println(db.payments)
+			for e := db.payments.Front(); e != nil; e = e.Next() {
+				p := e.Value.(*Payment)
+				log.Print(p)
+			}
+			log.Println()
 			log.Println("database prited!")
 		}
 	}
