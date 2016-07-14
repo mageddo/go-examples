@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 	"fmt"
+	"sync"
 )
 
 type Payment struct {
@@ -15,9 +16,16 @@ type Payment struct {
 
 var keep int = 1; // 1=keep populate the database, !1=do not populate the database
 
+type DB struct {
+	mu sync.Mutex
+	payments []Payment
+}
+
+var db DB
+
 func main() {
 
-	payments := &[]Payment{ // initial database status
+	db.payments = []Payment{ // initial database status
 		{creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99},
 		{creditor: "Ana Carolina", debtor: "Elvis", value: 60.00},
 		{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55},
@@ -26,17 +34,17 @@ func main() {
 	c := make(chan *Payment, 1)
 
 	// one guy reading from database and putting on the queue pool
-	go PaymentQueuePoolSender(c, payments)
+	go PaymentQueuePoolSender(c)
 
 	for i:=1; i <= 10; i++ { // 10 consumers of the queue
 		go PaymentQueueConsumer(c, i)
 	}
 
 	// ever populating the database with new requests
-	go dataBasePopulator(payments)
+	go dataBasePopulator()
 
 	// print the database stats time to times
-	go stats(payments)
+	go stats()
 
 	// some queue useful commands
 	for cmd:="" ; ; fmt.Scanln(&cmd) {
@@ -57,13 +65,13 @@ func main() {
 /**
  * Keep inserting itens on database(array) to be consumed by queues
  */
-func dataBasePopulator(payments *[]Payment){
+func dataBasePopulator(){
 	for i := 1; ; i++ {
 		time.Sleep(time.Millisecond * 100)
 		if keep != 1 {
 			continue
 		}
-		*payments = append((*payments), Payment{
+		db.payments = append(db.payments, Payment{
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
 			value: 1.99,
@@ -75,9 +83,10 @@ func dataBasePopulator(payments *[]Payment){
 /*
  * Send payments to consumers one-by-one
  */
-func PaymentQueuePoolSender(c chan<- *Payment, payments *[]Payment) {
+func PaymentQueuePoolSender(c chan<- *Payment) {
+	payments := &db.payments
 	for {
-		for i := 0; i < len(*payments); i++ {
+		for i := 0; i < len((*payments)); i++ {
 			p := &(*payments)[i]
 			if(p.status == 0){
 				c <- p
@@ -133,10 +142,23 @@ func countProcessingPayments(payments *[]Payment) int {
 	return count
 }
 
-func stats(payments *[]Payment){
+func countProcessedPayments(payments *[]Payment) int {
+	var count int = 0;
+	ps := (*payments)
+	for i:=0; i < len(ps); i++{
+		if ps[i].status == 2 {
+			count++;
+		}
+	}
+	return count
+}
+
+func stats(){
+	payments := &db.payments
 	for ;; {
 		log.Println("===========================")
-		log.Printf("not processed=%d, processing=%d\n", countNotProcessedPayments(payments), countProcessingPayments(payments))
+		log.Printf("not processed=%d, processing=%d, processed=%d\n", countNotProcessedPayments(payments),
+			countProcessingPayments(payments), countProcessedPayments(payments))
 		log.Println("===========================")
 		time.Sleep(time.Second * 5)
 	}
