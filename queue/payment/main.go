@@ -9,6 +9,7 @@ import (
 )
 
 type Payment struct {
+	id int
 	creditor string
 	debtor string
 	value float64
@@ -25,9 +26,9 @@ var db DB
 
 func main() {
 
-	db.payments.PushBack(&Payment{creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99})
-	db.payments.PushBack(&Payment{creditor: "Ana Carolina", debtor: "Elvis", value: 60.00})
-	db.payments.PushBack(&Payment{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55})
+	db.payments.PushBack(&Payment{id: 1, creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99})
+	db.payments.PushBack(&Payment{id: 2, creditor: "Ana Carolina", debtor: "Elvis", value: 60.00})
+	db.payments.PushBack(&Payment{id: 3, creditor: "Maria Azeli", debtor: "Elvis", value: 10.55})
 
 	c := make(chan *Payment, 1)
 
@@ -73,12 +74,13 @@ func main() {
  */
 func dataBasePopulator(){
 
-	for i := 1; ; i++ {
+	for i := 4; ; i++ {
 		time.Sleep(time.Millisecond * 300)
 		if keep != 1 {
 			continue
 		}
 		db.payments.PushBack(&Payment{
+			id: i,
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
 			value: 1.99,
@@ -97,9 +99,10 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 		for e := db.payments.Front(); e != nil; e = e.Next() {
 			p := e.Value.(*Payment)
 			if(p.status == 0){
-				log.Println("sending pay to: ", p.creditor)
-				p.status = 1
+				log.Printf("sending payment=%d: ", p.id)
 				c <- p
+				p.status = 1
+				log.Printf("sent payment=%d: ", p.id)
 				found = true
 			}
 		}
@@ -117,10 +120,10 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 func PaymentQueueConsumer(c <-chan *Payment, i int){
 	for {
 		var payment *Payment = <- c
-		log.Printf("queue=pay-%d, paying %.2f from %s to %s\n", i, payment.value, payment.debtor, payment.creditor)
+		log.Printf("received payment=%d queue=pay-%d, paying %.2f from %s to %s\n", payment.id, i, payment.value, payment.debtor, payment.creditor)
 		// taking a time to execute the very long payment process
 		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
-		log.Printf("queue=pay-%d, payed!", i)
+		log.Printf("payed payment=%d, queue=pay-%d", i, payment.id)
 		payment.status = 2;
 	}
 }
