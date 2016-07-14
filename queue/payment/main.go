@@ -172,7 +172,6 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 func PaymentQueueConsumer(c <-chan *Payment, i int){
 	for {
 		var payment *Payment = <- c
-		//log.Printf("received payment=%d queue=pay-%d, paying %.2f from %s to %s\n", payment.id, i, payment.value, payment.debtor, payment.creditor)
 		log.Printf("received payment=%d\n", payment.id)
 		// taking a time to execute the very long payment process
 		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
