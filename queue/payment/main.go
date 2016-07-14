@@ -30,38 +30,55 @@ func (db *DB) add(p *Payment){
 }
 
 func (db *DB) getNotProcessed() (*Payment){
-	db.mu.Lock()
 	for e := db.payments.Front(); e != nil; e = e.Next() {
-		p := e.Value.(*Payment)
+		p := *e.Value.(*Payment)
 		if(p.status == 0){
-			db.mu.Unlock()
-			return p
+			return &p
 		}
 	}
-	db.mu.Unlock()
 	return nil
 }
 
-func (db *DB) getPayment(id int) (*Payment){
+func (db *DB) getNotProcessedAndSetProcessing() (*Payment){
 	db.mu.Lock()
+	p := db.getNotProcessed()
+	if p == nil {
+		db.mu.Unlock()
+		return nil
+	}
+	p.status = 1
+	db.updateItem(p)
+	db.mu.Unlock()
+	return p
+}
+
+func (db *DB) getPaymentLock(id int) (*Payment){
+	db.mu.Lock()
+	p := db.getPayment(id)
+	db.mu.Unlock()
+	return p
+}
+
+func (db *DB) getPayment(id int) (*Payment){
 	for e := db.payments.Front(); e != nil; e = e.Next() {
 		p := e.Value.(*Payment)
 		if(p.id == id){
-			db.mu.Unlock()
 			return p
 		}
 	}
-	db.mu.Unlock()
 	return nil
 }
 
 func (db *DB) updateItem(p *Payment){
 	dbP := db.getPayment(p.id)
-	db.mu.Lock()
 	dbP.status = p.status
 	dbP.creditor = p.creditor
 	dbP.debtor = p.debtor
 	dbP.value = p.value
+}
+func (db *DB) updateItemLocked(p *Payment){
+	db.mu.Lock()
+	db.updateItem(p)
 	db.mu.Unlock()
 }
 
@@ -137,13 +154,10 @@ func dataBasePopulator(){
  */
 func PaymentQueuePoolSender(c chan<- *Payment) {
 	for {
-		p := db.getNotProcessed()
+		p := db.getNotProcessedAndSetProcessing()
 		if p != nil {
-			log.Printf("sending payment=%d: ", p.id)
+			log.Printf(">> sending payment=%d: ", p.id)
 			c <- p
-			p.status = 1
-			db.updateItem(p)
-
 		}else{
 			log.Println("nothing to process, hibernating...")
 			time.Sleep(time.Second * 30)
@@ -158,12 +172,13 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 func PaymentQueueConsumer(c <-chan *Payment, i int){
 	for {
 		var payment *Payment = <- c
-		log.Printf("received payment=%d queue=pay-%d, paying %.2f from %s to %s\n", payment.id, i, payment.value, payment.debtor, payment.creditor)
+		//log.Printf("received payment=%d queue=pay-%d, paying %.2f from %s to %s\n", payment.id, i, payment.value, payment.debtor, payment.creditor)
+		log.Printf("received payment=%d\n", payment.id)
 		// taking a time to execute the very long payment process
 		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
 		log.Printf("payed payment=%d, queue=pay-%d", i, payment.id)
 		payment.status = 2;
-		db.updateItem(payment)
+		db.updateItemLocked(payment)
 	}
 }
 
