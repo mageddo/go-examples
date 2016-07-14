@@ -5,6 +5,7 @@ import (
 	"time"
 	"fmt"
 	"sync"
+	"container/list"
 )
 
 type Payment struct {
@@ -18,18 +19,16 @@ var keep int = 1; // 1=keep populate the database, !1=do not populate the databa
 
 type DB struct {
 	mu sync.Mutex
-	payments []Payment
+	payments list.List
 }
 
 var db DB
 
 func main() {
 
-	db.payments = []Payment{ // initial database status
-		{creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99},
-		{creditor: "Ana Carolina", debtor: "Elvis", value: 60.00},
-		{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55},
-	}
+	db.payments.PushBack(&Payment{creditor:"Bruna Lopes", debtor:"Elvis", value: 20.99})
+	db.payments.PushBack(&Payment{creditor: "Ana Carolina", debtor: "Elvis", value: 60.00})
+	db.payments.PushBack(&Payment{creditor: "Maria Azeli", debtor: "Elvis", value: 10.55})
 
 	c := make(chan *Payment, 1)
 
@@ -70,14 +69,13 @@ func main() {
  */
 func dataBasePopulator(){
 
-
 	for i := 1; ; i++ {
 		time.Sleep(time.Millisecond * 100)
 		if keep != 1 {
 			continue
 		}
 		db.mu.Lock()
-		db.payments = append(db.payments, Payment{
+		db.payments.PushBack(&Payment{
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
 			value: 1.99,
@@ -93,8 +91,8 @@ func dataBasePopulator(){
 func PaymentQueuePoolSender(c chan<- *Payment) {
 	for {
 		db.mu.Lock()
-		for i := 0; i < len(db.payments); i++ {
-			p := &db.payments[i]
+		for e := db.payments.Front(); e != nil; e = e.Next() {
+			p := e.Value.(*Payment)
 			if(p.status == 0){
 				c <- p
 				log.Println("sending to pay")
@@ -125,11 +123,12 @@ func PaymentQueueConsumer(c <-chan *Payment, i int){
 /**
  * All items on database that are not processed yet
  */
-func countNotProcessedPayments(payments *[]Payment) int {
+func countNotProcessedPayments() int {
 	var count int = 0;
-	ps := (*payments)
-	for i:=0; i < len(ps) ; i++{
-		if ps[i].status == 0 {
+
+	for e := db.payments.Front(); e != nil; e = e.Next() {
+		p := e.Value.(*Payment)
+		if p.status == 0 {
 			count++;
 		}
 	}
@@ -139,22 +138,22 @@ func countNotProcessedPayments(payments *[]Payment) int {
 /**
  * All items on database that are processing now
  */
-func countProcessingPayments(payments *[]Payment) int {
+func countProcessingPayments() int {
 	var count int = 0;
-	ps := (*payments)
-	for i:=0; i < len(ps); i++{
-		if ps[i].status == 1 {
+	for e := db.payments.Front(); e != nil; e = e.Next() {
+		p := e.Value.(*Payment)
+		if p.status == 1 {
 			count++;
 		}
 	}
 	return count
 }
 
-func countProcessedPayments(payments *[]Payment) int {
+func countProcessedPayments() int {
 	var count int = 0;
-	ps := (*payments)
-	for i:=0; i < len(ps); i++{
-		if ps[i].status == 2 {
+	for e := db.payments.Front(); e != nil; e = e.Next() {
+		p := e.Value.(*Payment)
+		if p.status == 2 {
 			count++;
 		}
 	}
@@ -162,11 +161,11 @@ func countProcessedPayments(payments *[]Payment) int {
 }
 
 func stats(){
-	payments := &db.payments
+
 	for ;; {
 		log.Println("===========================")
-		log.Printf("not processed=%d, processing=%d, processed=%d\n", countNotProcessedPayments(payments),
-			countProcessingPayments(payments), countProcessedPayments(payments))
+		log.Printf("not processed=%d, processing=%d, processed=%d\n", countNotProcessedPayments(),
+			countProcessingPayments(), countProcessedPayments())
 		log.Println("===========================")
 		time.Sleep(time.Second * 5)
 	}
