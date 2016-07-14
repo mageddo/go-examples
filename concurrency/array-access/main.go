@@ -4,47 +4,72 @@ import (
 	"math/rand"
 	"log"
 	"fmt"
+	"time"
+	"sync"
 )
 
 type DB struct {
-
+	mu sync.Mutex
 	ids []int
-
 }
 
+/**
+ * add item to database
+ */
 func (db *DB) add(id int){
+	db.mu.Lock()
+	log.Println("adding: ", id)
 	db.ids = append(db.ids, id)
+	db.mu.Unlock()
 }
 
-func (db *DB) remove(id int){
-	var i int = 0
+/**
+ * find item on database, return -1 if not exists
+ */
+func (db *DB) find(id int) int {
+	db.mu.Lock()
+	log.Println("finding: ", id)
 	var j int = -1
-	for ; j < len(db.ids); j++ {
+	for i :=0; i < len(db.ids); i++ {
+		time.Sleep(time.Millisecond * time.Duration(rand.Intn(30)))
 		if db.ids[i] == id {
 			j = i
 			break
 		}
 	}
+	db.mu.Unlock()
+	return j
+}
+
+/**
+ * remove item from database
+ */
+func (db *DB) remove(id int){
+	j := db.find(id)
+	db.mu.Lock()
 	if j != -1 {
-		db.ids = append(db.ids[:i], db.ids[i+1:]...)
+		log.Println("removing: ", id)
+		db.ids = append(db.ids[:j], db.ids[j + 1:]...)
 	}
+	db.mu.Unlock()
 }
 
 func main() {
 
 	var db DB
-	for i:=1; i <= 100; i++ {
-		id := i
-		go db.add(id)
-		k := rand.Intn(5)
-		if k == 3 {
-			log.Println("removing: ", id)
-			go db.remove(id)
-		}
+	n := 100
+	from := 1
+
+	for i:= from; i <= n; i++ {
+		id := i*100
+		db.add(id)
 	}
 
-	var str string
-	fmt.Scanln(&str)
+	for i:= from; i <= n; i++ {
+		go db.find(i)
+		go db.remove(i)
+	}
+	fmt.Scanln()
 	fmt.Println(db.ids)
 
 }
