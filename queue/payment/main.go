@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 	"fmt"
-	"sync"
 	"container/list"
+	"math/rand"
 )
 
 type Payment struct {
@@ -18,7 +18,6 @@ type Payment struct {
 var keep int = 1; // 1=keep populate the database, !1=do not populate the database
 
 type DB struct {
-	mu sync.Mutex
 	payments list.List
 }
 
@@ -59,7 +58,8 @@ func main() {
 		case "2":
 			for e := db.payments.Front(); e != nil; e = e.Next() {
 				p := e.Value.(*Payment)
-				log.Print(p)
+				fmt.Print(p)
+				fmt.Print(", ")
 			}
 			log.Println()
 			log.Println("database prited!")
@@ -78,13 +78,11 @@ func dataBasePopulator(){
 		if keep != 1 {
 			continue
 		}
-		db.mu.Lock()
 		db.payments.PushBack(&Payment{
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
 			value: 1.99,
 		})
-		db.mu.Unlock()
 
 	}
 }
@@ -94,7 +92,6 @@ func dataBasePopulator(){
  */
 func PaymentQueuePoolSender(c chan<- *Payment) {
 	for {
-		db.mu.Lock()
 		for e := db.payments.Front(); e != nil; e = e.Next() {
 			p := e.Value.(*Payment)
 			if(p.status == 0){
@@ -103,7 +100,6 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 				time.Sleep(time.Millisecond * 500)
 			}
 		}
-		db.mu.Unlock()
 	}
 	log.Println("pinger: all payments sended!")
 }
@@ -117,7 +113,7 @@ func PaymentQueueConsumer(c <-chan *Payment, i int){
 		payment.status = 1;
 		log.Printf("queue=pay-%d, paying %.2f from %s to %s\n", i, payment.value, payment.debtor, payment.creditor)
 		// taking a time to execute the very long payment process
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
 		log.Printf("queue=pay-%d, payed!", i)
 		payment.status = 2;
 	}
