@@ -57,6 +57,9 @@ func main() {
 			keep = 0
 			log.Println("populate disabled!")
 			break
+		case "2":
+			log.Println(db.payments)
+			log.Println("database prited!")
 		}
 	}
 
@@ -66,16 +69,20 @@ func main() {
  * Keep inserting itens on database(array) to be consumed by queues
  */
 func dataBasePopulator(){
+
+
 	for i := 1; ; i++ {
 		time.Sleep(time.Millisecond * 100)
 		if keep != 1 {
 			continue
 		}
+		db.mu.Lock()
 		db.payments = append(db.payments, Payment{
 			debtor: fmt.Sprintf("debitor: %d", i),
 			creditor: fmt.Sprintf("credtor: %d", i),
 			value: 1.99,
 		})
+		db.mu.Unlock()
 
 	}
 }
@@ -84,16 +91,17 @@ func dataBasePopulator(){
  * Send payments to consumers one-by-one
  */
 func PaymentQueuePoolSender(c chan<- *Payment) {
-	payments := &db.payments
 	for {
-		for i := 0; i < len((*payments)); i++ {
-			p := &(*payments)[i]
+		db.mu.Lock()
+		for i := 0; i < len(db.payments); i++ {
+			p := &db.payments[i]
 			if(p.status == 0){
 				c <- p
 				log.Println("sending to pay")
 				time.Sleep(time.Millisecond * 500)
 			}
 		}
+		db.mu.Unlock()
 	}
 	log.Println("pinger: all payments sended!")
 }
