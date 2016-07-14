@@ -74,7 +74,7 @@ func main() {
 func dataBasePopulator(){
 
 	for i := 1; ; i++ {
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 300)
 		if keep != 1 {
 			continue
 		}
@@ -97,8 +97,9 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 		for e := db.payments.Front(); e != nil; e = e.Next() {
 			p := e.Value.(*Payment)
 			if(p.status == 0){
+				log.Println("sending pay to: ", p.creditor)
+				p.status = 1
 				c <- p
-				log.Println("sending to pay")
 				found = true
 			}
 		}
@@ -116,7 +117,6 @@ func PaymentQueuePoolSender(c chan<- *Payment) {
 func PaymentQueueConsumer(c <-chan *Payment, i int){
 	for {
 		var payment *Payment = <- c
-		payment.status = 1;
 		log.Printf("queue=pay-%d, paying %.2f from %s to %s\n", i, payment.value, payment.debtor, payment.creditor)
 		// taking a time to execute the very long payment process
 		time.Sleep(time.Second * time.Duration(rand.Int31n(10)))
