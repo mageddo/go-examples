@@ -19,8 +19,10 @@ func main(){
 
 
 	ab := (*string)(unsafe.Pointer(uintptr(0xc82000a330)))
-
 	fmt.Printf("p=%p, msg=%s\n", ab, *ab)
+
+	ab2 := (*int)(unsafe.Pointer(uintptr(0xc82000a330+3)))
+	fmt.Printf("p=%p, msg=%d\n", ab2, *ab2)
 
 
 
