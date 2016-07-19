@@ -6,6 +6,10 @@ import (
 	"reflect"
 )
 
+/*
+ * The program only can change values of addresses inside the programm
+ * to change values of another program uses syscals
+ */
 func main(){
 
 	j := 11464646544484
