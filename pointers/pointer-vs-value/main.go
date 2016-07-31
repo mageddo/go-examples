@@ -26,4 +26,7 @@ func main() {
 	fmt.Println(m)
 	m.Mutate()
 	fmt.Println(m)
+
+	fmt.Println(m.a, m.b, (*m).a)
+
 }
