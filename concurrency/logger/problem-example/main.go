@@ -1,31 +1,10 @@
 package main
 
-import (
-	"log"
-	"net/http"
-	"fmt"
-	"time"
-	"math/rand"
-	"github.com/mageddo/go-examples/id"
-)
+import "log"
 
-var i int = 0;
-func handler(w http.ResponseWriter, r *http.Request) {
-	i++
-	var d int = i
-	fmt.Printf("Hi there, i=%d!\n", d)
-	time.Sleep(time.Duration(rand.Int31n(1000)) * time.Millisecond)
-	fmt.Printf("Bye there, i=%d!\n", d)
 
-	fmt.Fprint(w, "hi")
-}
-
+// see more at http://stackoverflow.com/questions/38666433/how-to-work-with-concurrent-logs-at-golang
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":5555", nil)
-}
-
-func main2() {
 
 	/* simulating 10000 users requests  */
 	i := 1;
@@ -36,9 +15,7 @@ func main2() {
 }
 
 func getHello(d int){
-
-	log.Printf("tid=%d, m=getHello, i=%d,begin", id.Id(), d)
-	log.Printf("tid=%d, m=getHello, i=%d, processing the hello message", id.Id(), d)
-	log.Printf("tid=%d, m=getHello, i=%d, end", id.Id(), d)
-
+	log.Printf("m=getHello, i=%d,begin", d)
+	log.Println("m=getHello, processing the hello message")
+	log.Printf("m=getHello, i=%d, end", d)
 }
