@@ -10,7 +10,7 @@ import (
 "github.com/docker/engine-api/types"
 "github.com/docker/engine-api/types/events"
 "golang.org/x/net/context"
-	"github.com/docker/engine-api/types/filters"
+"github.com/docker/engine-api/types/filters"
 )
 
 
