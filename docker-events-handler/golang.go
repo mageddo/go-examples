@@ -34,21 +34,14 @@ func main() {
 	}
 
 	// more about events here: http://docs-stage.docker.com/v1.10/engine/reference/commandline/events/
-	var filters = filters.NewArgs()
+	var eventFilter = filters.NewArgs()
 
-	// events to register a container
-	filters.Add("event", "exec_create")
-	filters.Add("event", "exec_start")
-	filters.Add("event", "create")
-	filters.Add("event", "start")
+	eventFilter.Add("event", "start")
 
-	// events to unregister a container
-	filters.Add("event", "destroy")
-	filters.Add("event", "die")
-	filters.Add("event", "kill")
-	filters.Add("event", "stop")
+	eventFilter.Add("event", "die")
+	eventFilter.Add("event", "stop")
 
-	body, err := cli.Events(context.Background(), types.EventsOptions{ Filters: filters })
+	body, err := cli.Events(context.Background(), types.EventsOptions{ Filters: eventFilter })
 	if err != nil {
 		log.Fatal(err)
 	}
