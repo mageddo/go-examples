@@ -67,7 +67,11 @@ func main() {
 			secondsStr = os.Getenv("WAIT_TIME_SECONDS")
 		}
 		seconds, err := strconv.Atoi(secondsStr)
-		fmt.Printf("req=health, server=%s, req=%d, seconds=%d, secondsErr=%v, version=%s\n", server,  cont, seconds, err, version)
+			
+		rawStatus := r.URL.Query().Get("status")
+		status, _ = strconv.Atoi(rawStatus)
+
+		fmt.Printf("req=health, server=%s, req=%d, seconds=%d, secondsErr=%v, version=%s, status=%d\n", server,  cont, seconds, err, version, status)
 		time.Sleep(time.Duration(seconds) * time.Second)
 		w.WriteHeader(status)
 		fmt.Fprintf(w, "status=%d, version=%s", status, version)
