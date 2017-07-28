@@ -58,7 +58,10 @@ func main() {
 	})
 
 	http.HandleFunc("/health/", func (w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("req=health, server=%s, req=%d\n", server,  cont)
+
+		seconds, err := strconv.Atoi(r.URL.Query().Get("wait-time-seconds"))
+		fmt.Printf("req=health, server=%s, req=%d, seconds=%d, secondsErr=%v\n", server,  cont, seconds, err)
+		time.Sleep(time.Duration(seconds) * time.Second)
 		w.WriteHeader(status)
 		w.Write([]byte(strconv.Itoa(status)))
 	})
