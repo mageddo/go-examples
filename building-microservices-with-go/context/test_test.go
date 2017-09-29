@@ -8,7 +8,11 @@ import (
 	"context"
 )
 
-func TestSiteRequestCanceledByTimeut(t *testing.T){
+// Samples and documentation
+// https://golang.org/pkg/context/#WithTimeout
+// https://talks.golang.org/2014/gotham-context.slide#11
+
+func TestSiteRequestCanceledByTimeout(t *testing.T){
 
 	r, _ := http.NewRequest("GET", "https://google.com", nil)
 
