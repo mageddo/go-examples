@@ -1,0 +1,13 @@
+# docker-compose -f golang.yml up -d && docker exec -it go-examples bash
+version: '2'
+services:
+  # a go runner and compiler from native docker image (it is based on ubuntu image and comes with curl, ping, wget)
+  go-examples:
+    container_name: go-examples
+    hostname: go-examples.dev
+    image: golang:1.9.1
+    volumes:
+      - $PWD:/go/src/github.com/mageddo/go-examples
+    working_dir: /go/src/github.com/mageddo/go-examples
+    command: tail -f /dev/null
+    network_mode: bridge
