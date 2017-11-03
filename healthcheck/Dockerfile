@@ -1,4 +1,6 @@
 FROM tutum/curl
 COPY server /usr/bin/server
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:8080/health/
+ENV WAIT_TIME_SECONDS=3
+ENV SYS_VERSION=1.4
+HEALTHCHECK --interval=30s --timeout=30s --retries=3 CMD curl -f http://localhost:8080/health/?status=400
 CMD server

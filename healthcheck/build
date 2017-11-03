@@ -1,0 +1,4 @@
+version=1.6
+go build server.go
+docker build --tag defreitas/test-http-count-server:$version .
+docker push defreitas/test-http-count-server:$version

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"net"
 	"strconv"
+	"os"
 )
 
 func init() {
@@ -50,17 +51,31 @@ var server string = ""
 
 func main() {
 
+	version := os.Getenv("SYS_VERSION")
+
 	http.HandleFunc("/counter/", func (w http.ResponseWriter, r *http.Request) {
 		if len(server) == 0 { server = getCurrentIpAddress()  }
 		cont+=1
-		fmt.Printf("req=counter, server=%s, req=%d\n", server,  cont)
-		fmt.Fprintf(w, "req=counter, server=%s, req=%d", server,  cont)
+		fmt.Printf("req=counter, server=%s, req=%d, version=%s\n", server,  cont, version)
+		fmt.Fprintf(w, "req=counter, server=%s, req=%d, version=%s", server,  cont, version)
 	})
 
 	http.HandleFunc("/health/", func (w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("req=health, server=%s, req=%d\n", server,  cont)
+
+		secondsStr := r.URL.Query().Get("wait-time-seconds")
+		if len(secondsStr) == 0 {
+			secondsStr = os.Getenv("WAIT_TIME_SECONDS")
+		}
+		seconds, err := strconv.Atoi(secondsStr)
+			
+		rawStatus := r.URL.Query().Get("status")
+		status, _ = strconv.Atoi(rawStatus)
+
+		fmt.Printf("req=health, server=%s, req=%d, seconds=%d, secondsErr=%v, version=%s, status=%d\n", server,  cont, seconds, err, version, status)
+		time.Sleep(time.Duration(seconds) * time.Second)
 		w.WriteHeader(status)
-		w.Write([]byte(strconv.Itoa(status)))
+		fmt.Fprintf(w, "status=%d, version=%s", status, version)
+
 	})
 
 	http.HandleFunc("/status/", func (w http.ResponseWriter, r *http.Request) {
