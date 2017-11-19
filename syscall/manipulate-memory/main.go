@@ -12,39 +12,71 @@ import (
  */
 func main(){
 
-	j := 11464646544484
-	x := "ok"
-	var k *string = &x
+	ConversionBetweenStructAndPointer()
+	NumberToPointerAndBack()
+	//ReadMemoryAddressToInt()
+	NumberToMemoryAddressThenConvertItBack()
+	ReadStructSpecificField()
 
-	var u1 *int8 = (*int8)(unsafe.Pointer(uintptr(0xC08200A2E0)))
+}
+func ReadStructSpecificField() {
 
-	fmt.Printf("p=%p, pv=%p\n", &u1, u1)
-	fmt.Printf("p=%p, msg=%s\n", k, *k)
-	z := (*int)(unsafe.Pointer(reflect.ValueOf(&j).Pointer()))
-	fmt.Printf("p=%p, msg=%d\n", k, *z)
-	//
-	//var v int = 1
-	//var tmp int
-	//for ;;{
-	//	fmt.Printf("v=%d, vp=%p\n", v, &v)
-	//	fmt.Scanln(&tmp);
-	//	if(tmp != -1){
-	//		v = tmp
-	//	}
-	//}
+	type Person struct {
+		name string
+		age int
+	}
 
-	//xz := uintptr(0xc08200a290)
-	//xz := uintptr(0x024670FD)
+	person := &Person{name:"Elvis", age:22}
+	personPointer := unsafe.Pointer(person)
+	ageOffset := unsafe.Offsetof(person.age)
+
+	age := (*int)(unsafe.Pointer(uintptr(personPointer) + ageOffset))
+
+	fmt.Printf("age=%d\n", *age)
+
+
+
+}
+func NumberToMemoryAddressThenConvertItBack() {
+	var age int = 22;
+	agePtr := uintptr(unsafe.Pointer(&age));
+
+	agePointer := unsafe.Pointer(agePtr)
+	convertedAge := (*int)(agePointer)
+
+	fmt.Printf("originalAge=%d, agePtr=%x, agePointer=%x, convertedAge=%d\n", age, agePtr, agePointer, *convertedAge)
+}
+func ReadMemoryAddressToInt() {
 	xz := uintptr(0xC08200A2E0)
 	fmt.Printf("sizeof=%d\n", unsafe.Sizeof(xz))
 	//ab := (*[unsafe.Sizeof(xz)]byte)(unsafe.Pointer(xz))
 	ab := (*int8)(unsafe.Pointer(xz))
 	fmt.Printf("p=%p, msg=%d\n", ab, *ab)
-	//*ab = 5
+}
 
-	//ab2 := (*int)(unsafe.Pointer(uintptr(0xc82000a330+3)))
-	//fmt.Printf("p=%p, msg=%d\n", ab2, *ab2)
+func NumberToPointerAndBack() {
+	j := 11464646544484
+	z := (*int)(unsafe.Pointer(reflect.ValueOf(&j).Pointer()))
+	fmt.Printf("z=%d\n", *z)
+}
+
+func ConversionBetweenStructAndPointer(){
 
 
+	type T struct {
+		A uint32
+		B int16
+	}
+
+	t1 := T{123, -321}
+	fmt.Printf("originalt=%v\n", t1)
+
+	// converting struct to pointer
+	p := unsafe.Pointer(&t1)
+
+
+	// pointer back to function
+	v := (*(*T)(p))
+	fmt.Printf("convertedt=%v\n", v)
 
 }

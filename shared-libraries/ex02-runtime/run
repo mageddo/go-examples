@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mkdir -p lib
+gcc -fPIC -shared -o lib/libhello.so c/hello.c
