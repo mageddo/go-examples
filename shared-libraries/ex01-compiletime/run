@@ -1,0 +1,5 @@
+#!/bin/sh
+
+mkdir -p lib
+gcc -fPIC -shared -o lib/libcounter.so c/counter.c && cp c/counter.h lib/counter.h
+go run main.go
