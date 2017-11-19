@@ -19,6 +19,7 @@ func main(){
 	ReadStructSpecificField()
 
 }
+
 func ReadStructSpecificField() {
 
 	type Person struct {
@@ -30,11 +31,11 @@ func ReadStructSpecificField() {
 	personPointer := unsafe.Pointer(person)
 	ageOffset := unsafe.Offsetof(person.age)
 
+	fmt.Printf("person=%v, personPointer=%x, ageOfsset=%x\n", person, personPointer, ageOffset)
+
 	age := (*int)(unsafe.Pointer(uintptr(personPointer) + ageOffset))
 
 	fmt.Printf("age=%d\n", *age)
-
-
 
 }
 func NumberToMemoryAddressThenConvertItBack() {
