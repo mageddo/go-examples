@@ -1,4 +1,5 @@
 // https://github.com/mageddo/go-static-linking
+// https://github.com/golang/go/wiki/cgo#Turning_C_arrays_into_Go_slices
 package main
 
 // #include <mntent.h>
