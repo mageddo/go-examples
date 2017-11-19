@@ -1,5 +1,7 @@
-package main
+// https://msdn.microsoft.com/pt-br/library/windows/desktop/ms680553(v=vs.85).aspx
+// https://msdn.microsoft.com/pt-br/library/windows/desktop/ms684320(v=vs.85).aspx
 
+package main
 import (
 	"syscall"
 	"fmt"
