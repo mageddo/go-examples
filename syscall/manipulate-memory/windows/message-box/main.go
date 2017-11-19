@@ -7,9 +7,6 @@
 
 package main
 // #include <windows.h>
-// #include <Winnt.h>
-// #include <wchar.h>
-// #include<stdio.h>
 import "C"
 
 import (
@@ -27,8 +24,7 @@ const (
 func main(){
 
   // buf := new(C.WCHAR)
-  x := make([]byte, 500)
-  //x := []byte(string("joao hi!"))
+  x := make([]uint16, 500)
   buf := (*C.WCHAR)(unsafe.Pointer(&x))
 
 	msg := "Dois corações apaixonados"
@@ -51,7 +47,7 @@ func main(){
 
 
 	wchar_t e WCHAR sao o mesmo, sao alias por isso o codigo abaixo funciona
-	buf := new(C.WCHAR
+	buf := new(C.WCHAR)
 	var *C.wchar_t = (*C.wchar_t)(unsafe.Pointer(buf))
 
 */
