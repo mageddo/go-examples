@@ -8,25 +8,25 @@ type Mutatable struct {
 }
 
 func (m Mutatable) StayTheSame() {
-	fmt.Printf("by value=%p\n", &m)
 	m.a = 5
 	m.b = 7
+	fmt.Printf("by value, p=%p, value=%+v\n", &m, m)
 }
 
 func (m *Mutatable) Mutate() {
-	fmt.Printf("by value=%p\n", &m)
+	fmt.Printf("by pointer, p=%p, value=%+v\n", &m, m)
 	m.a = 5
 	m.b = 7
 }
 
 func main() {
-	m := &Mutatable{0, 0}
-	fmt.Println(m)
+	m := &Mutatable{10, 10}
+	fmt.Printf("after create the struct: m=%p, %+v\n\n", m, m)
 	m.StayTheSame()
-	fmt.Println(m)
+	fmt.Printf("after call #StayTheSame: m=%p, %+v\n\n", m, m)
 	m.Mutate()
-	fmt.Println(m)
+	fmt.Printf("after call #Mutate: m=%p, %+v\n\n", m, m)
 
-	fmt.Println(m.a, m.b, (*m).a)
+	fmt.Printf("a=%d, b=%d, a=%d\n", m.a, m.b, (*m).a)
 
 }
